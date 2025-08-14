@@ -11,17 +11,17 @@
     --danger:#ff4d4d; --warn:#ffbf5f; --ok:#7bff9d; --edge:#0a0e13;
     --sunA:#ffcf70; --sunB:#ffd884;
   }
+
+  /* ===== layout & type ===== */
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font-family:"Press Start 2P", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     image-rendering: pixelated; text-rendering: optimizeSpeed;
-    display:flex; align-items:center; justify-content:center;
     touch-action: manipulation;
+    padding-top: calc(8px + env(safe-area-inset-top)); /* natural scroll + safe area */
   }
-
-  /* layout */
-  .wrap{ width:min(760px,100%); padding:12px; padding-bottom:128px;}
+  .wrap{ width:min(760px,100%); margin:0 auto; padding:12px; padding-bottom:128px; }
   .title{text-align:center; font-weight:900; font-size:16px; line-height:1.3; text-shadow:0 2px 0 #000; margin-bottom:10px;}
   .grid{display:grid; gap:8px; grid-template-columns: 1fr;}
   .card{background:linear-gradient(#151d27,#0f151c); border:3px solid var(--edge);
@@ -45,8 +45,18 @@
   .pill.win{background:#0f2; color:#001b00} .pill.lose{background:#f33; color:#220000}
   .log{height:160px; overflow:auto; background:#0b1117; border:2px solid #000; border-radius:6px; padding:8px; font-size:10px; line-height:1.4;}
   .log p{margin:0 0 6px 0}
-  .inv{display:grid; grid-template-columns: repeat(3,1fr); gap:6px; font-size:10px}
-  .inv .it{background:#0b1117; border:2px solid #000; border-radius:6px; padding:6px;}
+
+  /* ===== inventory: no clipping, auto-fit ===== */
+  .inv{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap:6px;
+    font-size:10px;
+  }
+  .inv .it{
+    background:#0b1117; border:2px solid #000; border-radius:6px; padding:6px;
+    word-break:break-word;
+  }
   .split{display:grid; gap:8px; grid-template-columns: 1fr}
   @media (min-width:700px){ .split{grid-template-columns: 1fr 1fr;} }
   .footer{opacity:.7; text-align:center; font-size:9px; margin-top:6px}
@@ -79,7 +89,7 @@
   .warn .mini span{background:linear-gradient(90deg,#ffbf5f,#ffe5a8);}
   .bad  .mini span{background:linear-gradient(90deg,#ff4d4d,#ffadad);}
 
-  /* ===== Splash screen (drumstick) ===== */
+  /* ===== Splash screen (pixel drumstick) ===== */
   .splash{
     position:fixed; inset:0; background:radial-gradient(60% 60% at 50% 40%, #142232 0%, #0b0f14 70%);
     display:flex; align-items:center; justify-content:center; flex-direction:column;
@@ -99,13 +109,7 @@
     background:linear-gradient(#152130,#0f171f);
     animation: spin8 2.4s steps(8) infinite;
   }
-  .drum .emoji{
-    font-size:64px; line-height:1; filter:contrast(120%); transform:translateY(2px);
-  }
-  @keyframes spin8{
-    0%   { transform: rotate(0deg)}
-    100% { transform: rotate(360deg)}
-  }
+  @keyframes spin8{ to{ transform: rotate(360deg) } }
   .fadeOut{animation: fadeOut .5s ease forwards}
   @keyframes fadeOut{to{opacity:0; pointer-events:none; visibility:hidden}}
 
@@ -160,7 +164,22 @@
     <span class="tiny">Cute Games • Press Start 2P • v1.3</span>
   </div>
   <div class="drum" aria-hidden="true">
-    <div class="emoji" role="img" aria-label="Rotating chicken drumstick">🍗</div>
+    <!-- crisp pixel drumstick (SVG sprite) -->
+    <svg width="96" height="96" viewBox="0 0 16 16" style="image-rendering: pixelated; shape-rendering: crispEdges;">
+      <!-- shadow outline -->
+      <rect x="4" y="4" width="8" height="8" fill="#000000"/>
+      <!-- meat base -->
+      <rect x="5" y="5" width="7" height="6" fill="#8b4513"/>
+      <!-- highlights -->
+      <rect x="6" y="6" width="3" height="2" fill="#b86a2e"/>
+      <rect x="8" y="7" width="2" height="2" fill="#a85a22"/>
+      <!-- bone -->
+      <rect x="10" y="7" width="3" height="2" fill="#e8e1cf"/>
+      <rect x="13" y="8" width="1" height="1" fill="#cfc8b6"/>
+      <!-- edge accents -->
+      <rect x="5" y="11" width="1" height="1" fill="#5c2a0b"/>
+      <rect x="11" y="5" width="1" height="1" fill="#5c2a0b"/>
+    </svg>
   </div>
 </div>
 
@@ -393,12 +412,10 @@
       else log('❌ No water to drink.'); draw();
     },
     endday(){
-      // compute the new day first
       state.day++; state.turns=0; hungerThirstTick(8,9);
       state.energy=clamp(state.energy+15,0,100);
       state.warmth = state.shelter>0 ? clamp(state.warmth+10,0,100) : clamp(state.warmth-5,0,100);
       draw();
-      // Show Day banner BEFORE logging anything for the new day
       showDayBanner(state.day).then(()=>{
         log('🌙 You rest for the night. A new day dawns.');
         if(state.day>WIN_DAY) log(`<span class="pill win">🏆 You survived ${WIN_DAY} days! You win!</span>`);
@@ -478,9 +495,7 @@
     return new Promise(res=>{
       dayBanner.textContent = `Day ${dayNum}`;
       dayBanner.classList.add('show');
-      // spawn sparkles slightly after it appears
       setTimeout(()=>spawnSparkles(dayBanner), 300);
-      // total animation ~3.2s (slide .5 + hold 2.2 + fade .45)
       setTimeout(()=>{
         dayBanner.classList.remove('show');
         res();
