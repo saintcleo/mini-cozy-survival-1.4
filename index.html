@@ -21,7 +21,7 @@
     touch-action: manipulation;
     padding-top: calc(8px + env(safe-area-inset-top)); /* natural scroll + safe area */
   }
-  .wrap{ width:min(760px,100%); margin:0 auto; padding:12px; padding-bottom:128px; }
+  .wrap{ width:min(760px,100%); margin:0 auto; padding:12px; padding-bottom:180px; }
   .title{text-align:center; font-weight:900; font-size:16px; line-height:1.3; text-shadow:0 2px 0 #000; margin-bottom:10px;}
   .grid{display:grid; gap:8px; grid-template-columns: 1fr;}
   .card{background:linear-gradient(#151d27,#0f151c); border:3px solid var(--edge);
@@ -107,9 +107,11 @@
     margin-top:18px; width:96px; height:96px; display:grid; place-items:center;
     border:4px solid #000; border-radius:14px; box-shadow:0 5px 0 #0008;
     background:linear-gradient(#152130,#0f171f);
-    animation: spin8 2.4s steps(8) infinite;
+    animation: bob 1.8s ease-in-out infinite;
   }
-  @keyframes spin8{ to{ transform: rotate(360deg) } }
+  .drum .rot{ animation: spinSteps 2.4s steps(12) infinite; transform-origin:center; }
+  @keyframes spinSteps{ to{ transform: rotate(360deg) } }
+  @keyframes bob{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(2px) } }
   .fadeOut{animation: fadeOut .5s ease forwards}
   @keyframes fadeOut{to{opacity:0; pointer-events:none; visibility:hidden}}
 
@@ -164,22 +166,46 @@
     <span class="tiny">Cute Games • Press Start 2P • v1.3</span>
   </div>
   <div class="drum" aria-hidden="true">
-    <!-- crisp pixel drumstick (SVG sprite) -->
-    <svg width="96" height="96" viewBox="0 0 16 16" style="image-rendering: pixelated; shape-rendering: crispEdges;">
-      <!-- shadow outline -->
-      <rect x="4" y="4" width="8" height="8" fill="#000000"/>
-      <!-- meat base -->
-      <rect x="5" y="5" width="7" height="6" fill="#8b4513"/>
-      <!-- highlights -->
-      <rect x="6" y="6" width="3" height="2" fill="#b86a2e"/>
-      <rect x="8" y="7" width="2" height="2" fill="#a85a22"/>
-      <!-- bone -->
-      <rect x="10" y="7" width="3" height="2" fill="#e8e1cf"/>
-      <rect x="13" y="8" width="1" height="1" fill="#cfc8b6"/>
-      <!-- edge accents -->
-      <rect x="5" y="11" width="1" height="1" fill="#5c2a0b"/>
-      <rect x="11" y="5" width="1" height="1" fill="#5c2a0b"/>
-    </svg>
+    <div class="rot">
+      <!-- 16×16 pixel drumstick sprite (juicier, tapered, two-tone bone) -->
+      <svg width="96" height="96" viewBox="0 0 16 16"
+           style="image-rendering: pixelated; shape-rendering: crispEdges">
+        <!-- OUTLINE -->
+        <rect x="4" y="3" width="5" height="1" fill="#000"/>
+        <rect x="9" y="4" width="1" height="1" fill="#000"/>
+        <rect x="3" y="4" width="1" height="4" fill="#000"/>
+        <rect x="4" y="8" width="1" height="1" fill="#000"/>
+        <rect x="5" y="9" width="1" height="1" fill="#000"/>
+        <rect x="6" y="10" width="2" height="1" fill="#000"/>
+        <rect x="8" y="9" width="1" height="2" fill="#000"/>
+        <rect x="9" y="8" width="1" height="1" fill="#000"/>
+        <rect x="10" y="8" width="1" height="1" fill="#000"/>
+        <rect x="11" y="7" width="1" height="2" fill="#000"/>
+        <rect x="12" y="7" width="1" height="1" fill="#000"/>
+        <rect x="12" y="9" width="1" height="1" fill="#000"/>
+        <rect x="13" y="8" width="2" height="1" fill="#000"/>
+        <!-- MEAT -->
+        <rect x="4" y="4" width="5" height="1" fill="#A44C1E"/>
+        <rect x="4" y="5" width="6" height="1" fill="#A44C1E"/>
+        <rect x="4" y="6" width="6" height="1" fill="#A44C1E"/>
+        <rect x="4" y="7" width="6" height="1" fill="#A44C1E"/>
+        <rect x="5" y="8" width="5" height="1" fill="#A44C1E"/>
+        <rect x="6" y="9" width="3" height="1" fill="#A44C1E"/>
+        <!-- SHADOW -->
+        <rect x="5" y="7" width="1" height="1" fill="#7A3312"/>
+        <rect x="6" y="8" width="1" height="1" fill="#7A3312"/>
+        <rect x="7" y="9" width="1" height="1" fill="#7A3312"/>
+        <rect x="8" y="8" width="1" height="1" fill="#7A3312"/>
+        <!-- HIGHLIGHTS -->
+        <rect x="6" y="4" width="1" height="1" fill="#D0723A"/>
+        <rect x="7" y="5" width="1" height="1" fill="#D0723A"/>
+        <rect x="6" y="6" width="1" height="1" fill="#E79255"/>
+        <!-- BONE -->
+        <rect x="11" y="8" width="1" height="1" fill="#EDE6D2"/>
+        <rect x="12" y="8" width="1" height="1" fill="#D5CEB9"/>
+        <rect x="13" y="8" width="1" height="1" fill="#EDE6D2"/>
+      </svg>
+    </div>
   </div>
 </div>
 
